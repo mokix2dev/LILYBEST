@@ -1,144 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LILYBEST - T-Embed CC1101 Firmwares</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    :root {
+      --primary: #8b5cf6;
+      --primary-dark: #7c3aed;
+      --dark: #0f172a;
+      --light: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --glass: rgba(255, 255, 255, 0.1);
+      --text: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
       margin: 0;
-      background-color: #f4f6fa;
-      color: #333;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .navbar {
-      background-color: #1e1e2f;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .navbar .brand {
-      color: #fff;
-      font-size: 1.7rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .content {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .subheading {
-      font-size: 0.95rem;
-      color: #777;
-      margin-bottom: 1.5rem;
-    }
-
-    .firmware-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .firmware-card {
-      background-color: #ffffff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .firmware-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    }
-
-    .firmware-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #222;
-    }
-
-    .firmware-desc {
-      font-size: 0.95rem;
-      color: #555;
-      margin-bottom: 0.5rem;
-    }
-
-    .firmware-author {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 0.4rem;
-    }
-
-    .firmware-link a {
-      font-size: 0.9rem;
-      color: #1e88e5;
-      text-decoration: none;
+    @font-face {
+      font-family: 'Geist';
+      src: url('https://assets.codepen.io/605876/Geist-Medium.woff2') format('woff2');
       font-weight: 500;
     }
 
-    .firmware-link a:hover {
-      text-decoration: underline;
+    @font-face {
+      font-family: 'Geist';
+      src: url('https://assets.codepen.io/605876/Geist-Bold.woff2') format('woff2');
+      font-weight: 700;
     }
 
-    @media (max-width: 600px) {
-      .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    body {
+      font-family: 'Geist', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-      .navbar .brand {
-        margin-bottom: 0.5rem;
+    .blur-bg {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      right: -50%;
+      bottom: -50%;
+      background: radial-gradient(circle at 70% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 30% 70%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.5;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: white;
+    }
+
+    .brand-icon {
+      color: var(--primary);
+      font-size: 1.75rem;
+    }
+
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .firmware-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .firmware-card {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .firmware-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), #ec4899);
+    }
+
+    .firmware-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .firmware-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .firmware-desc {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      font-size: 0.9375rem;
+    }
+
+    .firmware-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    .firmware-author {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .author-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .firmware-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(139, 92, 246, 0.1);
+      color: var(--primary);
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .firmware-link:hover {
+      background: rgba(139, 92, 246, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .soon-badge {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .github-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 1.5rem;
+      }
+      
+      .title {
+        font-size: 2rem;
+      }
+      
+      .firmware-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.15;
+      z-index: -1;
+    }
+
+    .orb-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      top: 20%;
+      left: 10%;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: #ec4899;
+      bottom: 10%;
+      right: 10%;
+      animation: float 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translate(0, 0);
+      }
+      50% {
+        transform: translate(30px, 50px);
       }
     }
   </style>
 </head>
 <body>
+  <div class="blur-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-  <header class="navbar">
-    <div class="brand">LILYBEST</div>
-  </header>
+  <nav class="navbar">
+    <div class="brand">
+      <i class="fas fa-microchip brand-icon"></i>
+      <span>LILYBEST</span>
+    </div>
+  </nav>
 
-  <main class="content">
-    <h2 id="firmwares">Available Firmwares</h2>
-    <div class="subheading">*For Lilygo T Embed CC1101* [to add your firmware contact me on discord: mokix2dev_official]</div>
+  <main class="main-container">
+    <header class="header">
+      <h1 class="title">T-Embed CC1101 Firmware Hub</h1>
+      <p class="subtitle">*For Lilygo T Embed CC1101* [to add your firmware contact me on discord: mokix2dev_official]</p>
+    </header>
 
-    <div class="firmware-list">
-      <div class="firmware-card">
-        <div class="firmware-title">Bruce Firmware</div>
-        <div class="firmware-desc">Stable and efficient firmware. Avaible For Lilygo T Embed cc1101</div>
-        <div class="firmware-author">Author: pr3y</div>
-        <div class="firmware-link"><a href="https://github.com/pr3y/Bruce" target="_blank">View Firmware</a></div>
-      </div>
+    <div class="firmware-grid">
+      <article class="firmware-card">
+        <div class="card-header">
+          <div>
+            <h3 class="firmware-title">Bruce Firmware</h3>
+            <div class="github-stats">
+            </div>
+          </div>
+          <i class="fas fa-shield-alt" style="color: var(--success); font-size: 1.5rem;"></i>
+        </div>
+        <p class="firmware-desc">Stable and efficient firmware. Available For Lilygo T Embed cc1101 with advanced features and regular updates.</p>
+        <div class="firmware-meta">
+          <div class="firmware-author">
+            <div class="author-avatar">P</div>
+            <span>pr3y</span>
+          </div>
+          <a href="https://github.com/pr3y/Bruce" target="_blank" class="firmware-link">
+            <i class="fas fa-external-link-alt"></i> View Firmware
+          </a>
+        </div>
+      </article>
 
-      <div class="firmware-card">
-        <div class="firmware-title">Capibara Zero</div>
-        <div class="firmware-desc">Lightweight Firmware.</div>
-        <div class="firmware-author">Author: Andrea Canale</div>
-        <div class="firmware-link"><a href="https://flash.capibarazero.com/" target="_blank">View Firmware</a></div>
-      </div>
+      <article class="firmware-card">
+        <div class="card-header">
+          <div>
+            <h3 class="firmware-title">Capibara Zero</h3>
+            <div class="github-stats">
+            </div>
+          </div>
+          <i class="fas fa-bolt" style="color: var(--warning); font-size: 1.5rem;"></i>
+        </div>
+        <p class="firmware-desc">Lightweight Firmware optimized for performance and minimal resource usage. Perfect for constrained environments.</p>
+        <div class="firmware-meta">
+          <div class="firmware-author">
+            <div class="author-avatar">A</div>
+            <span>Andrea Canale</span>
+          </div>
+          <a href="https://flash.capibarazero.com/" target="_blank" class="firmware-link">
+            <i class="fas fa-external-link-alt"></i> View Firmware
+          </a>
+        </div>
+      </article>
 
-      <div class="firmware-card">
-        <div class="firmware-title">SOON!</div>
-        <div class="firmware-desc">Upcoming firmware!</div>
-        <div class="firmware-author">Author: Unknown</div>
-        <div class="firmware-link"><a href="#" onclick="return false;">Coming Soon</a></div>
-      </div>
+      <article class="firmware-card">
+        <div class="card-header">
+          <div>
+            <h3 class="firmware-title">Soon More Firmwares...</h3>
+            <div class="github-stats">
+            </div>
+          </div>
+          <div class="soon-badge">SOON!</div>
+        </div>
+        <p class="firmware-desc">Next-generation firmware with experimental features and cutting-edge performance optimizations.</p>
+        <div class="firmware-meta">
+          <div class="firmware-author">
+            <div class="author-avatar">?</div>
+            <span>Unknown Developer</span>
+          </div>
+          <a href="#" onclick="return false;" class="firmware-link">
+            <i class="fas fa-lock"></i> Coming Soon
+          </a>
+        </div>
+      </article>
     </div>
   </main>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.firmware-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `all 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s`;
+        
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100);
+      });
+    });
+  </script>
 </body>
 </html>
